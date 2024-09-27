@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class ServidorMulticast {
-    private final String grupoMulticast = "224.0.0.1";
-    private final int portaMulticast = 44443;
+    private final String grupoMulticast = "224.0.0.2";
+    private final int portaMulticast = 44444;
     private final String caminhoLog = "log_dados_recebidos.txt";
 
     public void escutarGrupo() {

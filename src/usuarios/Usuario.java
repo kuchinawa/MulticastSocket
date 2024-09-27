@@ -14,7 +14,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Usuario {
-    private final String multicastGroup = "224.0.0.1"; 
+    private final String multicastGroup = "224.0.0.2";
     private final int multicastPort = 44443;
 
 
