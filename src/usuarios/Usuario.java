@@ -7,8 +7,10 @@ import java.net.MulticastSocket;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,8 +19,8 @@ public class Usuario {
     private final String multicastGroup = "224.0.0.2";
     private final int multicastPort = 44447;
 
-
     private List<String> dadosRecebidos = new ArrayList<>();
+    private Set<String> mensagensRecebidas = new HashSet<>();
 
     public void iniciarCliente() {
         try {
@@ -53,8 +55,12 @@ public class Usuario {
                             bufferRecepcao,
                             0,
                             pacoteRecepcao.getLength());
-                    synchronized (dadosRecebidos) {
-                        dadosRecebidos.add(dados);
+                    synchronized (mensagensRecebidas) {
+                        if (mensagensRecebidas.add(dados)) {
+                            synchronized (dadosRecebidos) {
+                                dadosRecebidos.add(dados);
+                            }
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

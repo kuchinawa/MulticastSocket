@@ -8,7 +8,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
 public class ServidorMulticast {
@@ -17,6 +20,9 @@ public class ServidorMulticast {
     private String grupoMulticast2 = "224.0.0.2";
     private int portaMulticast2 = 44447;
     private final String caminhoLog = "log_dados_recebidos.txt";
+
+    private static final BlockingQueue<String> filaDeMensagens = new java.util.concurrent.LinkedBlockingQueue<>();
+    private static final ConcurrentHashMap<String, Boolean> mensagensProcessadas = new ConcurrentHashMap<>();
 
     public void escutarGrupo(String nomeServidor, String grupoMulticast2, int portaMulticast2) {
         this.grupoMulticast2 = grupoMulticast2;
@@ -34,7 +40,6 @@ public class ServidorMulticast {
             System.out.println("Grupo: " + grupo);
             System.out.println(nomeServidor + " multicast ouvindo no grupo " + grupoMulticast);
 
-            BlockingQueue<String> filaDeMensagens = new java.util.concurrent.LinkedBlockingQueue<>();
 
             ExecutorService executorService = java.util.concurrent.Executors.newFixedThreadPool(2);
             Runnable tarefaCaptar = () -> {
@@ -48,10 +53,19 @@ public class ServidorMulticast {
                     }
 
                     String dadosRecebidos = new String(packet.getData(), 0, packet.getLength());
-                    System.out.println("Servidor multicast recebeu: " + dadosRecebidos);
+//                    String identificadorUnico = dadosRecebidos.hashCode() + "";
 
-                    filaDeMensagens.add(dadosRecebidos);
-                    registrarDadosNoLog(dadosRecebidos);
+                    System.out.println(nomeServidor + " multicast recebeu: " + dadosRecebidos);
+
+                    synchronized (filaDeMensagens) {
+                        if(!filaDeMensagens.contains(dadosRecebidos)){
+                            filaDeMensagens.add(dadosRecebidos);
+                            registrarDadosNoLog(dadosRecebidos);
+                        }
+
+                    }
+
+
                 }
             };
 
@@ -90,9 +104,9 @@ public class ServidorMulticast {
     }
 
     public static void main(String[] args) {
-//        ServidorMulticast servidor3 = new ServidorMulticast();
-//        servidor3.escutarGrupo("Servidor3", "224.0.0.2", 44447);
-        ServidorMulticast servidor4 = new ServidorMulticast();
-        servidor4.escutarGrupo("Servidor4", "224.0.0.3", 44448);
+        ServidorMulticast servidor3 = new ServidorMulticast();
+        servidor3.escutarGrupo("Servidor3", "224.0.0.2", 44447);
+//        ServidorMulticast servidor4 = new ServidorMulticast();
+//        servidor4.escutarGrupo("Servidor4", "224.0.0.3", 44448);
     }
 }
