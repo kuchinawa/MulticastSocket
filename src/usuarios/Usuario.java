@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Usuario {
     private final String multicastGroup = "224.0.0.2";
-    private final int multicastPort = 44443;
+    private final int multicastPort = 44447;
 
 
     private List<String> dadosRecebidos = new ArrayList<>();

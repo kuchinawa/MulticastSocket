@@ -14,21 +14,23 @@ public class Servidor2 {
             DatagramSocket servidorSocket = new DatagramSocket(porta);
             System.out.println("Servidor 2 (Sul) ouvindo na porta " + porta);
 
+            byte[] buffer = new byte[1024];
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+            DatagramSocket multicastSocket = new DatagramSocket();
             while (true) {
-                byte[] buffer = new byte[1024];
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+
                 servidorSocket.receive(packet);
 
                 String dadosRecebidos = new String(packet.getData(), 0, packet.getLength());
                 System.out.println("Servidor 2 recebeu do Drone Sul: " + dadosRecebidos);
 
 
-                DatagramSocket multicastSocket = new DatagramSocket();
+
                 InetAddress grupo = InetAddress.getByName(grupoMulticast);
                 DatagramPacket multicastPacket = new DatagramPacket(dadosRecebidos.getBytes(), dadosRecebidos.length(), grupo, portaMulticast);
                 multicastSocket.send(multicastPacket);
-                multicastSocket.close();
             }
+//            multicastSocket.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
